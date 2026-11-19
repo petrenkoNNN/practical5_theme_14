@@ -65,3 +65,25 @@ th {
 td {
   vertical-align: top;
 }
+
+form button {
+  display: block;
+}
+
+form button[hidden] {
+  display: none;
+}
+
+#error {
+  margin: 0 0 15px;
+  color: red;
+}
+
+#sort-select,
+#sort-btn {
+  margin-bottom: 10px;
+}
+
+td button {
+  display: inline;
+}
