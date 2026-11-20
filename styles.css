@@ -74,13 +74,13 @@ form button[hidden] {
   display: none;
 }
 
-#error {
+.error {
   margin: 0 0 15px;
   color: red;
 }
 
-#sort-select,
-#sort-btn {
+.sort-select,
+.sort-btn {
   margin-bottom: 10px;
 }
 
