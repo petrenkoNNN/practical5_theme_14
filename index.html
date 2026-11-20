@@ -3,27 +3,32 @@
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
-    <form id="film-form">
-      <label for="title">Название:</label><br />
-      <input type="text" id="title" name="title" /><br />
-      <label for="genre">Жанр:</label><br />
-      <input type="text" id="genre" name="genre" /><br />
-      <label for="releaseYear">Год:</label><br />
-      <input type="text" id="releaseYear" name="releaseYear" /><br />
-      <input type="checkbox" id="isWatched" name="isWatched" />
-      <label for="isWatched">Успели посмотреть?</label><br />
+    <form class="film-form">
+      <label>Название:<br />
+        <input type="text" class="title" name="title" required />
+      </label>
+      <label>Жанр:<br />
+        <input type="text" class="genre" name="genre" required />
+      </label>
+      <label>Год:<br />
+        <input type="text" class="release-year" name="releaseYear" required />
+      </label>
+      <label>
+        <input type="checkbox" class="is-watched" name="isWatched" /><br />
+        Успели посмотреть?
+      </label>
 
-      <p id="error"></p>
-      <button type="submit" id="submit-btn">Добавить</button>
-      <button type="button" id="cancel-btn" hidden>Отменить редактирование</button>
+      <p class="error"></p>
+      <button type="submit" class="submit-btn">Добавить</button>
+      <button type="button" class="cancel-btn" hidden>Отменить редактирование</button>
     </form>
-    <select id="sort-select">
+    <select class="sort-select">
       <option value="releaseYear">Год</option>
       <option value="title">Название</option>
       <option value="genre">Жанр</option>
     </select>
-    <button type="button" id="sort-btn">Сортировать</button>
-    <table id="film-table">
+    <button type="button" class="sort-btn">Сортировать</button>
+    <table class="film-table">
       <thead>
         <tr>
           <th>Название</th>
@@ -33,7 +38,7 @@
           <th>Действие</th>
         </tr>
       </thead>
-      <tbody id="film-tbody">
+      <tbody class="film-tbody">
         <!-- Rows will be inserted here -->
       </tbody>
     </table>
