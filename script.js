@@ -1,14 +1,12 @@
-const formEl = document.querySelector('#film-form');
-const titleEl = document.querySelector('#title');
-const genreEl = document.querySelector('#genre');
-const releaseYearEl = document.querySelector('#releaseYear');
-const isWatchedEl = document.querySelector('#isWatched');
-const errorEl = document.querySelector('#error');
-const submitBtnEl = document.querySelector('#submit-btn');
-const cancelBtnEl = document.querySelector('#cancel-btn');
-const sortSelectEl = document.querySelector('#sort-select');
-const sortBtnEl = document.querySelector('#sort-btn');
-const filmTableBodyEl = document.querySelector('#film-tbody');
+const formEl = document.querySelector('.film-form');
+const errorEl = document.querySelector('.error');
+const submitBtnEl = document.querySelector('.submit-btn');
+const cancelBtnEl = document.querySelector('.cancel-btn');
+const sortSelectEl = document.querySelector('.sort-select');
+const sortBtnEl = document.querySelector('.sort-btn');
+const filmTableBodyEl = document.querySelector('.film-tbody');
+
+const requiredItems = ['title', 'genre', 'releaseYear'];
 
 let editIndex = null;
 
@@ -26,17 +24,17 @@ const resetForm = () => {
   cancelBtnEl.hidden = true;
 };
 
-const validateForm = () => {
-  const title = titleEl.value.trim();
-  const genre = genreEl.value.trim();
-  const releaseYear = releaseYearEl.value.trim();
+const validateForm = (formData) => {
+  for (let i = 0; i < requiredItems.length; i++) {
+    const value = formData.get(requiredItems[i]);
 
-  if (!title || !genre || !releaseYear) {
-    errorEl.textContent = 'Заполните все поля: название, жанр и год выпуска.';
-    return false;
+    if (!value || value.trim() === '') {
+      errorEl.textContent = 'Заполните все поля: название, жанр и год выпуска.';
+      return false;
+    }
   }
 
-  if (!(+releaseYear > 0)) {
+  if (!(+formData.get('releaseYear') > 0)) {
     errorEl.textContent = 'Год выпуска должен быть положительным числом.';
     return false;
   }
@@ -47,17 +45,19 @@ const validateForm = () => {
 
 const handleFormSubmit = (e) => {
   e.preventDefault()
+  const formData = new FormData(formEl);
 
-  if (!validateForm()) {
+  if (!validateForm(formData)) {
     return;
   }
 
-  const film = {
-    title: titleEl.value.trim(),
-    genre: genreEl.value.trim(),
-    releaseYear: releaseYearEl.value.trim(),
-    isWatched: isWatchedEl.checked,
+  const film = {};
+
+  for (let [key, value] of formData) {
+    film[key] = value.trim();
   }
+
+  film.isWatched = formData.has('isWatched');
 
   if (editIndex === null) {
     addFilmToLocalStorage(film)
@@ -131,10 +131,16 @@ const deleteFilm = (index) => {
 const startEdit = (index) => {
   const film = getFilms()[index];
 
-  titleEl.value = film.title;
-  genreEl.value = film.genre;
-  releaseYearEl.value = film.releaseYear;
-  isWatchedEl.checked = film.isWatched;
+   Object.entries(film).forEach(([name, value]) => {
+    const fieldEl = formEl.elements[name];
+    if (!fieldEl) return;
+
+    if (fieldEl.type === 'checkbox') {
+      fieldEl.checked = value;
+    } else {
+      fieldEl.value = value;
+    }
+  });
 
   editIndex = index;
   errorEl.textContent = '';
@@ -147,8 +153,8 @@ const sortFilms = () => {
   const films = getFilms();
 
   films.sort((a, b) => {
-    if (key === 'releaseYear') {
-      return +a.releaseYear - +b.releaseYear;
+    if (!isNaN(a[key]) && !isNaN(b[key])) {
+      return +a[key] - +b[key];
     }
 
     return a[key].localeCompare(b[key]);
@@ -159,6 +165,11 @@ const sortFilms = () => {
   resetForm();
 };
 
+const actionDict = {
+  delete: deleteFilm,
+  edit: startEdit,
+};
+
 formEl.addEventListener('submit', handleFormSubmit);
 cancelBtnEl.addEventListener('click', resetForm);
 sortBtnEl.addEventListener('click', sortFilms);
@@ -166,12 +177,8 @@ sortBtnEl.addEventListener('click', sortFilms);
 filmTableBodyEl.addEventListener('click', (e) => {
   const { action, index } = e.target.dataset;
 
-  if (action === 'delete') {
-    deleteFilm(+index);
-  }
-
-  if (action === 'edit') {
-    startEdit(+index);
+  if (actionDict[action]) {
+    actionDict[action](+index);
   }
 });
 
